@@ -56,7 +56,7 @@ The system is designed for healthcare providers, salons, or any business requiri
 ## Getting Started
 ### Prerequisites
 - [.NET 7 SDK](https://dotnet.microsoft.com/download)
-- [SQL Server](https://www.microsoft.com/en-us/sql-server/) (or configure PostgreSQL in `appsettings.json`)
+- [SQL Server](https://www.microsoft.com/en-us/sql-server/) 
 - [Git](https://git-scm.com/)
 
 ### Installation
