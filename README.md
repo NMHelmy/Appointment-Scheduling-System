@@ -69,7 +69,7 @@ The system is designed for healthcare providers, salons, or any business requiri
    ```
    // Update connection string in appsettings.json
    "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost; Database=AppointmentSchedulingDatabase; Trusted_Connection=true;TrustServerCertificate=true"
+    "DefaultConnection": "Server=localhost; Database=YourDatabaseName; Trusted_Connection=true;TrustServerCertificate=true"
     },
     ```
 3. Apply migrations
