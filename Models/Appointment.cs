@@ -24,7 +24,7 @@ namespace AppointmentScheduling.Models
         [ForeignKey("User")]
         public int UserId { get; set; }
 
-        // Navigation property to Users
+        // Navigation properties
         [JsonIgnore] // Prevent serialization loops
         public User? User { get; set; }
 
@@ -32,5 +32,12 @@ namespace AppointmentScheduling.Models
         public int? ServiceId { get; set; }
         [JsonIgnore]
         public Service? Service { get; set; }
+        public List<AppointmentStatus> StatusHistory { get; set; } = new();
+        public Review? Review { get; set; }
+        [InverseProperty("Appointment")]
+        public List<Notification> Notifications { get; set; } = new();
+
+        [InverseProperty("Appointment")]
+        public List<Payment> Payments { get; set; } = new();
     }
 }

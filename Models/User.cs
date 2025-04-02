@@ -18,10 +18,14 @@ namespace AppointmentScheduling.Models
         [Required]
         public string PasswordHash { get; set; } = "";
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [Required]
+        public string Role { get; set; } = "Client"; // Default to client
 
-        // Navigation property to Appointments
+        // Navigation properties
         [JsonIgnore] // Prevent circular reference issues
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
-
+        public List<Review> Reviews { get; set; } = new();
+        [InverseProperty("User")]
+        public List<Notification> Notifications { get; set; } = new();
     }
 }

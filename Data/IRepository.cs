@@ -1,4 +1,6 @@
-﻿namespace AppointmentScheduling.Data
+﻿using System.Linq.Expressions;
+
+namespace AppointmentScheduling.Data
 {
     // Generic repository interface defining common database operations
     public interface IRepository
@@ -8,6 +10,7 @@
         void RemoveEntity<T>(T entity) where T : class; // Marks an entity for removal (change is applied after SaveChanges)
         Task<IEnumerable<T>> GetAllAsync<T>() where T : class; // Retrieves all entities of type T asynchronously
         Task<T?> GetByIdAsync<T>(int id) where T : class; // Finds an entity by its primary key asynchronously - Returns null if not found (nullable return type)
-        IQueryable<T> GetQueryable<T>() where T : class; // Provides queryable access to entities for building custom LINQ queries -Useful for adding Where, OrderBy, etc. clauses before execution
+        IQueryable<T> GetQueryable<T>() where T : class; // Provides queryable access to entities for building custom LINQ queries -Useful for adding Where, OrderBy
+        Task<bool> AnyAsync<T>(Expression<Func<T, bool>> predicate) where T : class; // To avoid booking overlapping appointments
     }
 }

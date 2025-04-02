@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace AppointmentScheduling.Data
 {
@@ -53,6 +54,12 @@ namespace AppointmentScheduling.Data
         public IQueryable<T> GetQueryable<T>() where T : class
         {
             return _context.Set<T>();
+        }
+
+        // Used for conflict detection (e.g., overlapping appointments).
+        public async Task<bool> AnyAsync<T>(Expression<Func<T, bool>> predicate) where T : class
+        {
+            return await _context.Set<T>().AnyAsync(predicate);
         }
     }
 }

@@ -18,5 +18,6 @@ namespace AppointmentScheduling.DTOs
 
         [MinLength(8)]
         public string? Password { get; set; } // Optional password update
+        public string? Role { get; set; }
     }
 }

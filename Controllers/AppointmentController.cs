@@ -4,11 +4,14 @@ using AppointmentScheduling.Data;
 using AppointmentScheduling.Models;
 using AppointmentScheduling.DTOs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AppointmentScheduling.Controllers
 {
+    // Write Controller (Staff/Admin only)
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AdminsOnly")] // Only Admins can modify appointments
     public class AppointmentController : ControllerBase
     {
         private readonly IRepository _repository;
@@ -25,42 +28,32 @@ namespace AppointmentScheduling.Controllers
             _logger = logger;
         }
 
-        // Get all appointments
-        [HttpGet("GetAppointments")]
-        public async Task<IActionResult> GetAppointments()
-        {
-            var appointments = await _repository.GetAllAsync<Appointment>();
-            return Ok(appointments);
-        }
-
-        // Get appointment by ID
-        [HttpGet("GetAppointment/{appointmentId}")]
-        public async Task<IActionResult> GetAppointment(int appointmentId)
-        {
-            var appointment = await _repository.GetByIdAsync<Appointment>(appointmentId);
-            return appointment == null
-                ? NotFound("Appointment not found.")
-                : Ok(appointment);
-        }
-
         // Add new appointment
         [HttpPost("AddAppointment")]
         public async Task<IActionResult> AddAppointment(AppointmentToAddDto appointmentDto)
         {
+            bool hasTimeConflict = await _repository.AnyAsync<Appointment>(a =>
+            a.UserId == appointmentDto.UserId &&
+            a.AppointmentDate < appointmentDto.AppointmentDate.AddHours(1) &&  // Adjust buffer as needed
+            a.AppointmentDate.AddHours(1) > appointmentDto.AppointmentDate);   // 1-hour minimum gap
+
+            if (hasTimeConflict)
+            {
+                return Conflict(new ProblemDetails
+                {
+                    Title = "Time Conflict",
+                    Detail = "User already has an appointment within the selected time window.",
+                    Status = StatusCodes.Status409Conflict
+                });
+            }
+
             // Validate user exists
             var user = await _repository.GetByIdAsync<User>(appointmentDto.UserId);
             if (user == null) return NotFound("User not found");
 
-            // Create appointment with only scalar properties
-            var appointment = new Appointment
-            {
-                Title = appointmentDto.Title,
-                Description = appointmentDto.Description,
-                AppointmentDate = appointmentDto.AppointmentDate,
-                UserId = user.UserId,  // Set only the foreign key
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+            var appointment = _mapper.Map<Appointment>(appointmentDto);
+            appointment.CreatedAt = DateTime.UtcNow;
+            appointment.UpdatedAt = DateTime.UtcNow;
 
             // Handle ServiceId if provided
             if (appointmentDto.ServiceId.HasValue)
@@ -76,9 +69,9 @@ namespace AppointmentScheduling.Controllers
             }
 
             _repository.AddEntity(appointment);
-            await _repository.SaveChangesAsync();
-
-            return Ok(appointment);
+            return await _repository.SaveChangesAsync()
+                ? Ok(user)
+                : BadRequest("Failed to add user.");
         }
 
         // Update appointment

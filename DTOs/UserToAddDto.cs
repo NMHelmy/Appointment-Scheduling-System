@@ -15,5 +15,6 @@ namespace AppointmentScheduling.DTOs
 
         [Required, MinLength(8)]
         public string? Password { get; set; }
+        public string Role { get; set; } = "Client"; // Default to client
     }
 }

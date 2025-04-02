@@ -4,11 +4,13 @@ using AppointmentScheduling.Data;
 using AppointmentScheduling.Models;
 using AppointmentScheduling.DTOs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AppointmentScheduling.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AdminsOnly")] // Only admins can access
     public class UserController : ControllerBase
     {
         private readonly IRepository _repository;
@@ -66,6 +68,8 @@ namespace AppointmentScheduling.Controllers
                 ? Ok(user)
                 : BadRequest("Failed to add user.");
         }
+
+        // Add staff
 
         // Update user
         [HttpPut("UpdateUser")]
