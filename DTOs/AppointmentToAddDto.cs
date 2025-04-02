@@ -14,5 +14,6 @@ namespace AppointmentScheduling.DTOs
 
         [Required]
         public int UserId { get; set; }
+        public int? ServiceId { get; set; }
     }
 }

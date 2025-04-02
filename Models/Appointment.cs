@@ -26,6 +26,11 @@ namespace AppointmentScheduling.Models
 
         // Navigation property to Users
         [JsonIgnore] // Prevent serialization loops
-        public User User { get; set; } = new();
+        public User? User { get; set; }
+
+        [ForeignKey("Service")]
+        public int? ServiceId { get; set; }
+        [JsonIgnore]
+        public Service? Service { get; set; }
     }
 }

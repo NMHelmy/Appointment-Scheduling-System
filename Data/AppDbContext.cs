@@ -14,6 +14,7 @@ namespace AppointmentScheduling.Data
         }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Service> Services { get; set; }
 
         // Fallback configuration if context isn't configured via DI
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -55,6 +56,17 @@ namespace AppointmentScheduling.Data
             .WithMany(u => u.Appointments)
             .HasForeignKey(a => a.UserId)
             .OnDelete(DeleteBehavior.Restrict); // Prevent user deletion if appointments exist
+
+            modelBuilder.Entity<Service>(entity =>
+            {
+                entity.HasIndex(s => s.Name).IsUnique();
+            });
+
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.Service)
+                .WithMany(s => s.Appointments)
+                .HasForeignKey(a => a.ServiceId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

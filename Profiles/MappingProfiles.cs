@@ -2,7 +2,7 @@
 using AppointmentScheduling.DTOs;
 using AppointmentScheduling.Models;
 
-namespace AppointmentScheduling
+namespace AppointmentScheduling.Profiles
 {
     public class MappingProfiles : Profile
     {
@@ -15,6 +15,9 @@ namespace AppointmentScheduling
             // User mappings
             CreateMap<UserToAddDto, User>();
             CreateMap<UserToUpdateDto, User>();
+            
+            // Service mappings
+            CreateMap<ServiceToAddDto, Service>();
         }
     }
 }

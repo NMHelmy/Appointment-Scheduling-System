@@ -47,25 +47,33 @@ namespace AppointmentScheduling.Controllers
         [HttpPost("AddAppointment")]
         public async Task<IActionResult> AddAppointment(AppointmentToAddDto appointmentDto)
         {
-            // Get the existing user WITHOUT creating a new one
-            var user = await _repository.GetQueryable<User>()
-                .FirstOrDefaultAsync(u => u.UserId == appointmentDto.UserId);
+            // Validate user exists
+            var user = await _repository.GetByIdAsync<User>(appointmentDto.UserId);
+            if (user == null) return NotFound("User not found");
 
-            if (user == null)
-            {
-                return NotFound($"User with ID {appointmentDto.UserId} not found.");
-            }
-
+            // Create appointment with only scalar properties
             var appointment = new Appointment
             {
                 Title = appointmentDto.Title,
                 Description = appointmentDto.Description,
                 AppointmentDate = appointmentDto.AppointmentDate,
-                UserId = user.UserId,  // Use the existing user's ID
-                User = user,           // Attach the entire user object
+                UserId = user.UserId,  // Set only the foreign key
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
+
+            // Handle ServiceId if provided
+            if (appointmentDto.ServiceId.HasValue)
+            {
+                // Verify service exists without loading the entire entity
+                var serviceExists = await _repository.GetQueryable<Service>()
+                    .AnyAsync(s => s.ServiceId == appointmentDto.ServiceId.Value);
+
+                if (!serviceExists) return NotFound($"Service with ID {appointmentDto.ServiceId} not found");
+
+                // Set only the foreign key, not the navigation property
+                appointment.ServiceId = appointmentDto.ServiceId.Value;
+            }
 
             _repository.AddEntity(appointment);
             await _repository.SaveChangesAsync();
