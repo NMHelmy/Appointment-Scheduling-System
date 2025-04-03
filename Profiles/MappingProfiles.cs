@@ -18,6 +18,20 @@ namespace AppointmentScheduling.Profiles
             
             // Service mappings
             CreateMap<ServiceToAddDto, Service>();
+
+            // Review mappings
+            CreateMap<ReviewResponseDto, Review>();
+            CreateMap<ReviewToAddDto, Review>();
+
+            // Notification mappings
+            CreateMap<NotificationDto, Notification>();
+            CreateMap<NotificationResponseDto, Notification>();
+            CreateMap<NotificationToAddDto, Notification>();
+            CreateMap<NotificationToUpdateDto, Notification>();
+
+            // Payment mappings
+            CreateMap<PaymentRequestDto, Payment>();
+            CreateMap<PaymentResponseDto, Payment>();
         }
     }
 }
